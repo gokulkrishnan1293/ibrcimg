@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Sky to Grass background matching your app -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#87CEEB" />
+      <stop offset="100%" stop-color="#A8E6A3" />
+    </linearGradient>
+    <!-- Gold gradient for the trophy -->
+    <linearGradient id="trophy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD580" />
+      <stop offset="100%" stop-color="#FFA500" />
+    </linearGradient>
+  </defs>
+  
+  <!-- App Icon Background with smooth rounded corners -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+  
+  <!-- Trophy Bowl -->
+  <path d="M156 120 h200 v80 c0 55.2-44.8 100-100 100 s-100-44.8-100-100 v-80 z" fill="url(#trophy)" stroke="#fff" stroke-width="16" />
+  
+  <!-- Trophy Stem and Base -->
+  <path d="M226 300 v60 h60 v-60 z" fill="url(#trophy)" />
+  <path d="M166 360 h180 v40 h-180 z" fill="#fff" />
+  
+  <!-- Left Handle -->
+  <path d="M156 140 c-40 0-60 20-60 50 c0 30 20 50 60 50" fill="none" stroke="#fff" stroke-width="24" stroke-linecap="round"/>
+  
+  <!-- Right Handle -->
+  <path d="M356 140 c40 0 60 20 60 50 c0 30-20 50-60 50" fill="none" stroke="#fff" stroke-width="24" stroke-linecap="round"/>
+  
+  <!-- Hero Star inside the Trophy -->
+  <polygon points="256,155 270,190 305,190 277,210 288,245 256,225 224,245 235,210 207,190 242,190" fill="#fff" />
+</svg>

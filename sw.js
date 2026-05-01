@@ -3,9 +3,17 @@ const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  // You can also cache the GitHub sprite sheets for true offline support
-  'https://raw.githubusercontent.com/gokulkrishnan1293/ibrcimg/main/batch1.png'
-  // Add batch2.png, batch3.png, etc., here if you want them cached offline
+  './icon.svg', // <-- Updated this line
+  'https://raw.githubusercontent.com/gokulkrishnan1293/ibrcimg/main/batch1.png',
+  'https://raw.githubusercontent.com/gokulkrishnan1293/ibrcimg/main/batch2.png',
+  'https://raw.githubusercontent.com/gokulkrishnan1293/ibrcimg/main/batch3.png',
+  'https://raw.githubusercontent.com/gokulkrishnan1293/ibrcimg/main/batch4.png',
+  'https://raw.githubusercontent.com/gokulkrishnan1293/ibrcimg/main/batch5.png',
+  'https://raw.githubusercontent.com/gokulkrishnan1293/ibrcimg/main/batch6.png',
+  'https://raw.githubusercontent.com/gokulkrishnan1293/ibrcimg/main/batch7.png',
+  'https://raw.githubusercontent.com/gokulkrishnan1293/ibrcimg/main/batch8.png',
+  'https://raw.githubusercontent.com/gokulkrishnan1293/ibrcimg/main/batch9.png',
+  'https://raw.githubusercontent.com/gokulkrishnan1293/ibrcimg/main/batch10.png'
 ];
 
 self.addEventListener('install', event => {
