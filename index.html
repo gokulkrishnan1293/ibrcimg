@@ -7,9 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#FFD580">
-<link rel="apple-touch-icon" href="./icon-192.png">
 <style>
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   body{
@@ -145,13 +142,37 @@
     border:1px solid rgba(255,255,255,0.5);
     text-shadow:1px 1px 0 rgba(0,0,0,0.15);
   }
-  #progress-track{background:rgba(0,0,0,0.18);border-radius:20px;height:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.4);}
-  #progress-fill{
-    height:100%;border-radius:20px;
-    background:linear-gradient(90deg,#FFD700,#FFA500,#FF6B6B,#FF1493,#9370DB);
-    background-size:200% 100%;
-    animation:shimmer 2s linear infinite;
-    transition:width 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  
+  /* --- CUSTOM SPORT SLIDER --- */
+  #sport-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 12px;
+    border-radius: 20px;
+    background: rgba(0,0,0,0.18);
+    outline: none;
+    border: 1px solid rgba(255,255,255,0.4);
+    cursor: pointer;
+  }
+  #sport-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: 3px solid currentColor;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  #sport-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: 3px solid currentColor;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   }
 
   /* --- MAIN CONTENT AREA --- */
@@ -276,7 +297,8 @@
             <span id="cat-label"></span>
             <span id="progress-text"></span>
           </div>
-          <div id="progress-track"><div id="progress-fill"></div></div>
+          <!-- INTERACTIVE SLIDER INSTEAD OF STATIC PROGRESS BAR -->
+          <input type="range" id="sport-slider" min="1" max="100" value="1" oninput="jumpToSport(this.value)">
         </div>
       </div>
     </div>
@@ -407,7 +429,6 @@ const SPORTS=[
   {n:100,sport:"Gymnastics",origin:"Greece",cat:"Traditional World",e:"🤸"},
 ];
 
-// All 10 Batches Registered
 const BATCH_IMAGES={
   1:"https://raw.githubusercontent.com/gokulkrishnan1293/ibrcimg/main/batch1.png",
   2:"https://raw.githubusercontent.com/gokulkrishnan1293/ibrcimg/main/batch2.png",
@@ -479,6 +500,24 @@ function onDelayChange(v) {
   document.getElementById("delay-val").textContent = `${delay}s`;
 }
 
+// Jump directly to a card using the slider
+function jumpToSport(val) {
+  const targetIdx = parseInt(val) - 1;
+  if (targetIdx === idx) return;
+  
+  const wrap = document.getElementById("card-wrap");
+  wrap.style.transition = "opacity 0.15s";
+  wrap.style.opacity = "0";
+  
+  setTimeout(() => {
+    idx = targetIdx;
+    render();
+    wrap.style.opacity = "1";
+    // Optional: Speak the card immediately when jumping
+    // speakCard(); 
+  }, 150);
+}
+
 function render(){
   const cur=SPORTS[idx];
   const cs=CAT[cur.cat]||CAT["Traditional & Popular"];
@@ -491,7 +530,14 @@ function render(){
   document.getElementById("cat-label").style.color="#fff";
   document.getElementById("progress-text").textContent=`${idx+1} / 100`;
   document.getElementById("progress-text").style.color="#fff";
-  document.getElementById("progress-fill").style.width=`${(idx+1)}%`;
+  
+  // Update the new slider
+  const slider = document.getElementById("sport-slider");
+  slider.value = idx + 1;
+  const pct = (idx / 99) * 100;
+  // Dynamic gradient so the "filled" part matches the category color
+  slider.style.background = `linear-gradient(90deg, #fff ${pct}%, rgba(0,0,0,0.18) ${pct}%)`;
+  slider.style.color = cs.dark; // Inherits to the thumb border
 
   const card=document.getElementById("card");
   card.style.borderColor=cs.bg;
@@ -626,15 +672,6 @@ document.addEventListener("keydown",e=>{
 });
 
 render();
-</script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker registered'))
-        .catch(err => console.log('Service Worker registration failed:', err));
-    });
-  }
 </script>
 </body>
 </html>
