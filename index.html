@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FFD580">
 <title>🏆 Sports Heroes Academy 🌟</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +18,7 @@
     height:100vh;
     width:100vw;
     overflow:hidden;
-    touch-action:none;
+    touch-action:auto;
     color:#2a2a2a;
     position:relative;
   }
@@ -204,6 +206,7 @@
     display: flex;
     flex-direction: column;
     transition:border-color 0.4s;
+    touch-action: none;
   }
   #card::before{content:"⭐";position:absolute;top:-12px;right:24px;font-size:32px;animation:sparkle 1.8s ease-in-out infinite;z-index:5;}
   #card::after{content:"✨";position:absolute;bottom:18px;left:14px;font-size:24px;opacity:0.6;animation:sparkle 2.2s ease-in-out infinite reverse; z-index: 5;}
@@ -266,9 +269,10 @@
   <div id="top-panel">
     <div id="title-row">
       <div id="title-banner">🏆 SPORTS HEROES</div>
-      <div style="display:flex; gap:8px;">
+      <div style="display:flex; gap:8px; align-items:center;">
         <button class="fs-btn" id="btn-toggle-panel" onclick="toggleAccordion()">🔼</button>
         <button class="fs-btn" onclick="toggleFullScreen()">⛶</button>
+        <button class="fs-btn" id="btn-install" style="display:none" title="Install PWA">⬇️</button>
       </div>
     </div>
 
@@ -513,8 +517,6 @@ function jumpToSport(val) {
     idx = targetIdx;
     render();
     wrap.style.opacity = "1";
-    // Optional: Speak the card immediately when jumping
-    // speakCard(); 
   }, 150);
 }
 
@@ -649,27 +651,63 @@ function starShower(){
   setTimeout(()=>{el.style.display="none";el.innerHTML="";},2500);
 }
 
-// Vertical Swipe Logic
-document.addEventListener("touchstart", e => { 
-  touchStartY = e.touches[0].clientY; 
-}, {passive: true});
+// Vertical Swipe Logic — scoped to the card area so page-level pull-to-refresh still works
+(function(){
+  const swipeContainer = document.getElementById('card') || document.getElementById('card-wrap') || document;
 
-document.addEventListener("touchend", e => {
-  if (touchStartY === null) return;
-  const d = touchStartY - e.changedTouches[0].clientY;
-  
-  if (Math.abs(d) > 55) {
-    go(d > 0 ? 1 : -1);
-    setTimeout(speakCard, 350); 
-  }
-  touchStartY = null;
-});
+  swipeContainer.addEventListener("touchstart", e => { 
+    touchStartY = e.touches[0].clientY; 
+  }, {passive: true});
+
+  swipeContainer.addEventListener("touchend", e => {
+    if (touchStartY === null) return;
+    const d = touchStartY - e.changedTouches[0].clientY;
+    
+    if (Math.abs(d) > 55) {
+      go(d > 0 ? 1 : -1);
+      setTimeout(speakCard, 350); 
+    }
+    touchStartY = null;
+  });
+})();
 
 document.addEventListener("keydown",e=>{
   if(e.key==="ArrowDown") go(1);
   else if(e.key==="ArrowUp") go(-1);
   else if(e.key===" "){e.preventDefault();speakCard();}
 });
+
+// Register service worker for offline support and to meet PWA criteria
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    console.log('ServiceWorker registered:', reg);
+  }).catch(err => console.warn('ServiceWorker registration failed:', err));
+}
+
+let deferredPrompt = null;
+const installBtn = document.getElementById('btn-install');
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (installBtn) {
+    installBtn.style.display = 'inline-flex';
+    installBtn.addEventListener('click', async () => {
+      installBtn.style.display = 'none';
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      console.log('PWA install choice', choice);
+      deferredPrompt = null;
+    }, { once: true });
+  }
+});
+
+// iOS fallback hint
+const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
+const isInStandaloneMode = () => ('standalone' in window.navigator) && window.navigator.standalone;
+if (isIos() && !isInStandaloneMode()) {
+  const hintEl = document.getElementById('hint');
+  if (hintEl) hintEl.textContent = 'Tap Share → Add to Home Screen to install';
+}
 
 render();
 </script>
